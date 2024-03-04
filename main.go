@@ -110,7 +110,8 @@ func main() {
 	for _, info := range infos {
 		client, err := clients.clientByChainID(info.CounterpartyChainID)
 		if err != nil {
-			fmt.Println("0:", err)
+			// fmt.Printf("fail to get client by chainID: %s\n", err.Error())
+
 			continue
 		}
 
@@ -127,7 +128,7 @@ func main() {
 
 			denom, err := c.QueryDenomTrace(ctx, hash)
 			if err != nil {
-				fmt.Println("1:", err.Error())
+				// fmt.Printf("fail to query denom trace: %s\n", err.Error())
 				continue
 			}
 
@@ -139,7 +140,7 @@ func main() {
 
 			amount, err := client.QueryBankTotalSupply(ctx, counterpartyDenom.IBCDenom())
 			if err != nil {
-				fmt.Println("2:", err.Error())
+				// fmt.Printf("fail to query total bank supply for chain %s: %s", info.CounterpartyChainID, err.Error())
 				continue
 			}
 
