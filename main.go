@@ -17,13 +17,13 @@ import (
 
 const (
 	configPath    = "./config/config.yaml"
-	targetChainID = "osmosis-1"
+	targetChainID = "cosmoshub-4"
 )
 
 var (
 	// targetChannels should be an empty slice if you want to run the escrow checker against every escrow account.
 	// Otherwise, add the channel-ids associated with escrow accounts you want to target.
-	targetChannels = []string{"channel-782", "channel-783"}
+	targetChannels = []string{}
 )
 
 type Info struct {
@@ -58,8 +58,15 @@ func main() {
 
 	// For every channel query the associated escrow account address, the escrow account balances,
 	// and the channel's associated client state in order to identify the counterparty chain.
-	infos := make([]*Info, len(channels))
-	for i, channel := range channels {
+	infos := []*Info{}
+	for _, channel := range channels {
+
+		// skip non-transfer channels
+		if channel.PortId != transfertypes.PortID {
+			fmt.Printf("skip channel %q with port %q\n", channel.ChannelId, channel.PortId)
+			continue
+		}
+
 		addr, err := c.QueryEscrowAddress(ctx, channel.PortId, channel.ChannelId)
 		if err != nil {
 			panic(err)
@@ -87,13 +94,15 @@ func main() {
 		//	fmt.Printf("Balance: %s \n", bal)
 		//}
 
-		infos[i] = &Info{
+		infos = append(infos, &Info{
 			Channel:             channel,
 			EscrowAddress:       addr,
 			Balances:            bals.Balances,
 			CounterpartyChainID: cs.ChainId,
-		}
+		})
 	}
+
+	fmt.Printf("number of transfer channels found: %d\n", len(infos))
 
 	// For each token balance in the escrow accounts, query the IBC denom trace from the hash,
 	// then compose the denom on the counterparty chain and query the tokens total supply.
@@ -101,7 +110,7 @@ func main() {
 	for _, info := range infos {
 		client, err := clients.clientByChainID(info.CounterpartyChainID)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("0:", err)
 			continue
 		}
 
@@ -118,7 +127,8 @@ func main() {
 
 			denom, err := c.QueryDenomTrace(ctx, hash)
 			if err != nil {
-				panic(err)
+				fmt.Println("1:", err.Error())
+				continue
 			}
 
 			// TODO: debug output that can be removed
@@ -129,7 +139,8 @@ func main() {
 
 			amount, err := client.QueryBankTotalSupply(ctx, counterpartyDenom.IBCDenom())
 			if err != nil {
-				panic(err)
+				fmt.Println("2:", err.Error())
+				continue
 			}
 
 			// TODO: debug output that can be removed

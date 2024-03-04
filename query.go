@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -230,6 +231,8 @@ func (c *Client) QueryChannels(ctx context.Context) ([]*chantypes.IdentifiedChan
 		time.Sleep(paginationDelay)
 		p.Key = next
 	}
+
+	fmt.Printf("number of channels found: %d\n", len(chans))
 
 	return chans, nil
 }

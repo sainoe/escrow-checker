@@ -1,4 +1,9 @@
 chains:
+  - name: CosmosHub
+    chain-id: cosmoshub-4
+    account-prefix: cosmos
+    rpc-address: https://cosmos-rpc.polkachu.com:443
+    timeout: 30s
   - name: Osmosis
     chain-id: osmosis-1
     account-prefix: osmosis
