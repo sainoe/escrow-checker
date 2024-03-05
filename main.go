@@ -63,7 +63,7 @@ func main() {
 
 		// skip non-transfer channels
 		if channel.PortId != transfertypes.PortID {
-			fmt.Printf("skip channel %q with port %q\n", channel.ChannelId, channel.PortId)
+			// fmt.Printf("skip channel %q with port %q\n", channel.ChannelId, channel.PortId)
 			continue
 		}
 
@@ -110,8 +110,7 @@ func main() {
 	for _, info := range infos {
 		client, err := clients.clientByChainID(info.CounterpartyChainID)
 		if err != nil {
-			// fmt.Printf("fail to get client by chainID: %s\n", err.Error())
-
+			fmt.Printf("fail to get client by chainID: %s\n", err.Error())
 			continue
 		}
 
@@ -128,7 +127,7 @@ func main() {
 
 			denom, err := c.QueryDenomTrace(ctx, hash)
 			if err != nil {
-				// fmt.Printf("fail to query denom trace: %s\n", err.Error())
+				fmt.Printf("fail to query denom trace: %s\n", err.Error())
 				continue
 			}
 
@@ -140,7 +139,7 @@ func main() {
 
 			amount, err := client.QueryBankTotalSupply(ctx, counterpartyDenom.IBCDenom())
 			if err != nil {
-				// fmt.Printf("fail to query total bank supply for chain %s: %s", info.CounterpartyChainID, err.Error())
+				fmt.Printf("fail to query total bank supply for chain: %s with RPC enpoint: %s with error: %v", info.CounterpartyChainID, client.Address, err.Error())
 				continue
 			}
 

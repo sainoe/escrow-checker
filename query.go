@@ -63,6 +63,7 @@ func (c *Client) QueryBankTotalSupply(ctx context.Context, denom string) (sdktyp
 
 	res, err := qc.SupplyOf(ctx, req, nil)
 	if err != nil {
+		fmt.Println(c.RPCClient.String())
 		return sdktypes.Coin{}, err
 	}
 
